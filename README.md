@@ -16,6 +16,24 @@
     - [Storage for the VM](#storage-for-the-vm)
     - [What is Azure Storage?](#what-is-azure-storage)
     - [Select an operating system](#select-an-operating-system)
+  - [Azure Resource Manager](#azure-resource-manager)
+  - [What are Resource Manager templates?](#what-are-resource-manager-templates)
+  - [Azure PowerShell](#azure-powershell)
+  - [Azure CLI](#azure-cli)
+  - [Programmatic (APIs)](#programmatic-apis)
+  - [Azure REST API](#azure-rest-api)
+  - [Azure Client SDK](#azure-client-sdk)
+  - [Azure VM extensions](#azure-vm-extensions)
+  - [Azure Automation services](#azure-automation-services)
+  - [What is availability?](#what-is-availability)
+  - [Why do I need to think about availability when using Azure?](#why-do-i-need-to-think-about-availability-when-using-azure)
+  - [What is an availability set?](#what-is-an-availability-set)
+    - [What is a fault domain?](#what-is-a-fault-domain)
+    - [What is an update domain?](#what-is-an-update-domain)
+  - [Failover across locations](#failover-across-locations)
+  - [Back up your virtual machines](#back-up-your-virtual-machines)
+  - [Advantages of using Azure Backup](#advantages-of-using-azure-backup)
+  - [Use Azure Backup](#use-azure-backup)
   
 # Part 1: Prerequisites for Azure administrators
 
@@ -155,3 +173,189 @@ When you create disks, you will have two options for managing the relationship b
 ### Select an operating system
 Azure provides a variety of OS images that you can install into the VM, including several versions of Windows and flavors of Linux. If you are looking for more than just base OS images, you can search the Azure Marketplace for more sophisticated install images that include the OS and popular software tools installed for specific scenarios. Instead of setting up and configuring each component, you can leverage a Marketplace image and install the entire stack all at once.
 Finally, if you can't find a suitable OS image, you can create your disk image with what you need, upload it to Azure storage, and use it to create an Azure VM.
+
+## Azure Resource Manager
+Typically, your Azure infrastructure will contain many resources, many of them related to one another in some way. Azure Resource Manager makes working with these related resources more efficient. It organizes resources into named resource groups that let you deploy, update, or delete all of the resources together. When we created the Ubuntu VM site, we identified the resource group as part of the VM creation, and Resource Manager placed the associated resources into the same group.
+
+
+## What are Resource Manager templates?
+**Resource Manager templates** are JSON files that define the resources you need to deploy for your solution.
+
+You can create a resource template for your VM. From the VM menu, under **Automation** select **Export template**.
+
+## Azure PowerShell
+Creating administration scripts is a powerful way to optimize your workflow. You can automate everyday, repetitive tasks, and after a script has been verified, it will run consistently, likely reducing errors. Azure PowerShell is ideal for one-off interactive tasks and/or the automation of repeated tasks.
+
+For example, you can use the `New-AzVM` cmdlet to create a new Azure virtual machine.
+
+```powershell
+New-AzVm `
+    -ResourceGroupName "TestResourceGroup" `
+    -Name "test-wp1-eus-vm" `
+    -Location "East US" `
+    -VirtualNetworkName "test-wp1-eus-network" `
+    -SubnetName "default" `
+    -SecurityGroupName "test-wp1-eus-nsg" `
+    -PublicIpAddressName "test-wp1-eus-pubip" `
+    -OpenPorts 80,3389
+```
+
+## Azure CLI
+Another option for scripting and command-line Azure interaction is the Azure CLI.
+
+The Azure CLI is Microsoft's cross-platform command-line tool for managing Azure resources such as virtual machines and disks from the command line. It's available for Windows, Linux and macOS, or in a browser using the Cloud Shell. Like Azure PowerShell, the Azure CLI is a powerful way to streamline your administrative workflow. Unlike Azure PowerShell, the Azure CLI does not need PowerShell to function.
+
+For example, from the CLI, you can create an Azure VM with the `az vm create` command.
+```azurecli
+az vm create \
+    --resource-group TestResourceGroup \
+    --name test-wp1-eus-vm \
+    --image win2016datacenter \
+    --admin-username jonc \
+    --admin-password aReallyGoodPasswordHere
+```
+The Azure CLI can be used with other scripting languages, such as Ruby and Python. Both languages are commonly used on non-Windows-based machines where a developer might not be familiar with PowerShell.
+
+## Programmatic (APIs)
+Generally speaking, both Azure PowerShell and Azure CLI are good options if you have simple scripts to run and want to stick to command-line tools. When it comes to more complex scenarios, where the creation and management of VMs form part of a larger application with complex logic, another approach is needed.
+
+## Azure REST API
+The Azure REST API provides developers with operations categorized by resource as well as the ability to create and manage VMs. Operations are exposed as URIs with corresponding HTTP methods (`GET`, `PUT`, `POST`, `DELETE`, and `PATCH`) and a corresponding response.
+
+The Azure Compute APIs give you programmatic access to virtual machines and their supporting resources. With this API, you have operations to:
+
+- Create and manage availability sets
+- Add and manage virtual machine extensions
+- Create and manage managed disks, snapshots, and images
+- Access the platform images available in Azure
+- Retrieve usage information of your resources
+- Create and manage virtual machines
+- Create and manage virtual machine scale sets
+
+
+You can interact with every type of resource in Azure programmatically.
+
+## Azure Client SDK
+Even though the REST API is platform and language agnostic, most often developers will look toward a higher level of abstraction. The Azure Client SDK encapsulates the Azure REST API, making it much easier for developers to interact with Azure.
+
+The Azure Client SDKs are available for a variety of languages and frameworks, including .NET-based languages such as C#, Java, Node.js, PHP, Python, Ruby, and Go.
+
+Here's an example snippet of C# code to create an Azure VM using the `Microsoft.Azure.Management.Fluent` NuGet package.
+
+```csharp
+var azure = Azure
+    .Configure()
+    .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
+    .Authenticate(credentials)
+    .WithDefaultSubscription();
+// ...
+var vmName = "test-wp1-eus-vm";
+
+azure.VirtualMachines.Define(vmName)
+    .WithRegion(Region.USEast)
+    .WithExistingResourceGroup("TestResourceGroup")
+    .WithExistingPrimaryNetworkInterface(networkInterface)
+    .WithLatestWindowsImage("MicrosoftWindowsServer", "WindowsServer", "2012-R2-Datacenter")
+    .WithAdminUsername("jonc")
+    .WithAdminPassword("aReallyGoodPasswordHere")
+    .WithComputerName(vmName)
+    .WithSize(VirtualMachineSizeTypes.StandardDS1)
+    .Create();
+```
+Here's the same snippet in Java using the Azure Java SDK.
+``` java
+String vmName = "test-wp1-eus-vm";
+// ...
+VirtualMachine virtualMachine = azure.virtualMachines()
+    .define(vmName)
+    .withRegion(Region.US_EAST)
+    .withExistingResourceGroup("TestResourceGroup")
+    .withExistingPrimaryNetworkInterface(networkInterface)
+    .withLatestWindowsImage("MicrosoftWindowsServer", "WindowsServer", "2012-R2-Datacenter")
+    .withAdminUsername("jonc")
+    .withAdminPassword("aReallyGoodPasswordHere")
+    .withComputerName(vmName)
+    .withSize("Standard_DS1")
+    .create();
+```
+## Azure VM extensions
+Let's assume you want to configure and install additional software on your virtual machine after the initial deployment. You want this task to use a specific configuration, monitored and executed automatically.
+
+Azure VM extensions are small applications that enable you to configure and automate tasks on Azure VMs after initial deployment. Azure VM extensions can be run with the Azure CLI, PowerShell, Azure Resource Manager templates, and the Azure portal.
+
+You bundle extensions with a new VM deployment, or run them against an existing system.
+
+## Azure Automation services
+Saving time, reducing errors, and increasing efficiency are some of the most significant operational management challenges faced when managing remote infrastructure. If you have a lot of infrastructure services, you might want to consider using higher-level services in Azure to help you operate from a higher level.
+
+**Azure Automation** enables you to integrate services that allow you to automate frequent, time-consuming, and error-prone management tasks with ease. These services include **process automation**, **configuration management**, and **update management**.
+
+
+- **Process Automation**. Let's assume you have a VM that is monitored for a specific error event. You want to take action, and fix the problem as soon as it's reported. Process automation enables you to set up watcher tasks that can respond to events that may occur in your datacenter.
+- **Configuration Management**. Perhaps you want to track software updates that become available for the operating system that runs on your VM. There are specific updates you may want to include or exclude. Configuration management enables you to track these updates, and take action as required. You use Microsoft Endpoint Configuration Manager to manage your company's PC, servers, and mobile devices. You can extend this support to your Azure VMs with Configuration Manager.
+- **Update Management**. This is used to manage updates and patches for your VMs. With this service, you're able to assess the status of available updates, schedule installation, and review deployment results to verify updates applied successfully. Update management incorporates services that provide process and configuration management. You enable update management for a VM directly from your Azure Automation account. You can also enable update management for a single virtual machine from the virtual machine pane in the portal.
+
+## What is availability?
+Availability is the percentage of time a service is available for use.
+
+Let's assume you have a website, and you want your customers to be able to access information at all times. Your expectation is 100% availability concerning website access.
+
+## Why do I need to think about availability when using Azure?
+Azure VMs run on physical servers hosted within the Azure Datacenter. As with most physical devices, there's a chance that there could be a failure. If the physical server fails, the virtual machines hosted on that server will also fail. If this happens, Azure will move the VM to a healthy host server automatically. However, this self-healing migration could take several minutes, during which, the application(s) hosted on that VM will not be available.
+
+The VMs could also be affected by periodic updates initiated by Azure itself. These maintenance events range from software updates to hardware upgrades and are required to improve platform reliability and performance. These events usually are performed without impacting any guest VMs, but sometimes the virtual machines will be rebooted to complete an update or upgrade.
+
+To ensure your services aren't interrupted and avoid a single point of failure, it's recommended to deploy at least two instances of each VM. This feature is called an availability set.
+
+## What is an availability set?
+An availability set is a logical feature used to ensure that a group of related VMs are deployed so that they aren't all subject to a single point of failure and not all upgraded at the same time during a host operating system upgrade in the datacenter. VMs placed in an availability set should perform an identical set of functionalities and have the same software installed.
+
+You can create availability sets through the Azure portal in the disaster recovery section. Also, you can build them using Resource Manager templates, or any of the scripting or API tools. When you place VMs into an availability set, Azure guarantees to spread them across **Fault Domains** and **Update Domains**.
+
+### What is a fault domain?
+A fault domain is a logical group of hardware in Azure that shares a common set of hardware components, and that share a single point of failure. You can think of it as a rack within an on-premises datacenter. The first two VMs in an availability set will be provisioned into **two different racks** so that if the network or the power failed in a rack, only one VM would be affected. Fault domains are also defined for managed disks attached to VMs.
+
+### What is an update domain?
+An update domain is a logical group of hardware that can undergo maintenance, or be rebooted at the same time. Azure will automatically place availability sets into update domains to minimize the impact when the Azure platform introduces host operating system changes. Azure then processes each update domain one at a time.
+
+Availability sets are a powerful feature to ensure the services running in your VMs are always available to your customers. However, they aren't foolproof. What if something happens to the data or the software running on the VM itself? For that, we'll need to look at other disaster recovery and backup techniques.
+
+## Failover across locations
+You can also replicate your infrastructure across sites to handle regional failover. Azure Site Recovery replicates workloads from a primary site to a secondary location. If an outage happens at your primary site, you can fail over to a secondary location. This failover enables users to continue to access your applications without interruption. You can then fail back to the primary location after it's up and running again. Azure Site Recovery is about replication of virtual or physical machines; it keeps your workloads available in an outage.
+
+While there are many attractive technical features to Site Recovery, there are at least two significant business advantages:
+
+- Site Recovery enables the use of Azure as a destination for recovery, thus eliminating the cost and complexity of maintaining a secondary physical datacenter.
+- Site Recovery makes it incredibly simple to test failovers for recovery drills without impacting production environments. This makes it easy to test your planned or unplanned failovers. After all, you don’t have a good disaster recovery plan if you’ve never tried to failover.
+
+The recovery plans you create with Site Recovery can be as simple or as complex as your scenario requires. You can leverage the recovery plans to replicate workloads to Azure, easily enabling new opportunities for migration, temporary bursts during surge periods, or development and testing of new applications.
+
+## Back up your virtual machines
+Azure Backup can be used for a wide range of data backup scenarios, such as:
+
+- Files and folders on Windows OS machines (physical or virtual, local or cloud)
+- Application-aware snapshots (Volume Shadow Copy Service)
+- Popular Microsoft server workloads such as Microsoft SQL Server, Microsoft SharePoint, and Microsoft Exchange
+- Native support for Azure Virtual Machines, both Windows, and Linux
+- Linux and Windows 10 client machines
+
+## Advantages of using Azure Backup
+Traditional backup solutions don't always take full advantage of the underlying Azure platform. The result is a solution that tends to be expensive or inefficient. The solution either offers too much or too little storage, does not offer the correct types of storage, or has cumbersome and long-winded administrative tasks. Azure Backup was designed to work in tandem with other Azure services and provides several distinct benefits.
+
+- **Automatic storage management**. Azure Backup automatically allocates and manages backup storage and uses a pay-as-you-use model. You only pay for what you use.
+- **Unlimited scaling**. Azure Backup uses the power and scalability of Azure to deliver high availability.
+- **Multiple storage options**. Azure Backup offers locally redundant storage where all copies of the data exist within the same region and geo-redundant storage where your data is replicated to a secondary region.
+- **Unlimited data transfer**. Azure Backup does not limit the amount of inbound or outbound data you transfer. Azure Backup also does not charge for the data that is transferred.
+- **Data encryption**. Data encryption allows for secure transmission and storage of your data in Azure.
+- **Application-consistent backup**. An application-consistent backup means that a recovery point has all required data to restore the backup copy. Azure Backup provides application-consistent backups.
+- **Long-term retention**. Azure doesn't limit the length of time you keep the backup data.
+
+## Use Azure Backup
+Azure Backup uses several components that you download and deploy to each computer you want to back up. The component that you deploy depends on what you want to protect.
+
+- Azure Backup agent
+- System Center Data Protection Manager
+- Azure Backup Server
+- Azure Backup VM extension
+
+Azure Backup uses a Recovery Services vault for storing the backup data. A vault is backed by Azure Storage blobs, making it a very efficient and economical long-term storage medium. With the vault in place, you can select the machines to back up, and define a backup policy (when snapshots are taken and for how long they’re stored).
