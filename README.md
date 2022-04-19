@@ -9,6 +9,9 @@
     - [Secure the network](#secure-the-network)
     - [Plan each VM deployment](#plan-each-vm-deployment)
     - [Name the VM](#name-the-vm)
+    - [What is an Azure resource?](#what-is-an-azure-resource)
+    - [Decide the location for the VM](#decide-the-location-for-the-vm)
+    - [Determine the size of the VM](#determine-the-size-of-the-vm)
   
 # Part 1: Prerequisites for Azure administrators
 
@@ -96,3 +99,26 @@ One piece of information people often don't put much thought into is the name of
 This name also defines a manageable Azure resource, and it's not trivial to change later. That means you should choose names that are meaningful and consistent, so you can easily identify what the VM does. A good convention is to include the following information in the name:
 ![Screenshot 2022-04-19 142317](https://user-images.githubusercontent.com/87706066/164014136-e8ffc5a2-c3c3-458c-925d-0ec5cd4d494c.png)
 
+### What is an Azure resource?
+An Azure resource is a manageable item in Azure. Just like a physical computer in your datacenter, VMs have several elements that are needed to do their job:
+
+- The VM itself
+- Storage account for the disks
+- Virtual network (shared with other VMs and services)
+- Network interface to communicate on the network
+- Network Security Group(s) to secure the network traffic
+- Public Internet address (optional)
+
+Azure will create all of these resources if necessary, or you can supply existing ones as part of the deployment process. Each resource needs a name that will be used to identify it. If Azure creates the resource, it will use the VM name to generate a resource name - another reason to be very consistent with your VM names!
+
+### Decide the location for the VM
+Azure has datacenters all over the world filled with servers and disks. These datacenters are grouped into geographic regions ('West US', 'North Europe', 'Southeast Asia', etc.) to provide redundancy and availability.
+
+When you create and deploy a virtual machine, you must select a region where you want the resources (CPU, storage, etc.) to be allocated. This lets you place your VMs as close as possible to your users to improve performance and to meet any legal, compliance, or tax requirements.
+
+Two other things to think about regarding the location choice. First, the location can limit your available options. Each region has different hardware available and some configurations are not available in all regions. Second, there are price differences between locations. If your workload isn't bound to a specific location, it can be very cost effective to check your required configuration in multiple regions to find the lowest price.
+
+### Determine the size of the VM
+Once you have the name and location set, you need to decide on the size of your VM. Rather than specify processing power, memory, and storage capacity independently, Azure provides different VM sizes that offer variations of these elements in different sizes. Azure provides a wide range of VM size options allowing you to select the appropriate mix of compute, memory, and storage for what you want to do.
+
+The best way to determine the appropriate VM size is to consider the type of workload your VM needs to run. Based on the workload, you're able to choose from a subset of available VM sizes. Workload options are classified as follows on Azure:
