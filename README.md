@@ -94,3 +94,5 @@ We can then start to answer some of the questions Azure will have for a new virt
 One piece of information people often don't put much thought into is the name of the VM. The VM name is used as the computer name, which is configured as part of the operating system. You can specify a name of up to 15 characters on a Windows VM and 64 characters on a Linux VM.
 
 This name also defines a manageable Azure resource, and it's not trivial to change later. That means you should choose names that are meaningful and consistent, so you can easily identify what the VM does. A good convention is to include the following information in the name:
+![Screenshot 2022-04-19 142317](https://user-images.githubusercontent.com/87706066/164014136-e8ffc5a2-c3c3-458c-925d-0ec5cd4d494c.png)
+
