@@ -122,3 +122,4 @@ Two other things to think about regarding the location choice. First, the locati
 Once you have the name and location set, you need to decide on the size of your VM. Rather than specify processing power, memory, and storage capacity independently, Azure provides different VM sizes that offer variations of these elements in different sizes. Azure provides a wide range of VM size options allowing you to select the appropriate mix of compute, memory, and storage for what you want to do.
 
 The best way to determine the appropriate VM size is to consider the type of workload your VM needs to run. Based on the workload, you're able to choose from a subset of available VM sizes. Workload options are classified as follows on Azure:
+![Screenshot 2022-04-19 145135](https://user-images.githubusercontent.com/87706066/164019643-dd04213f-0625-4a25-a1c4-5021bfbe5c1e.png)
