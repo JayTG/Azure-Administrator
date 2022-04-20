@@ -463,4 +463,5 @@ When moving resources, both the source group and the target group are locked dur
 ### Implementation
 To move resources, select the resource group containing those resources, and then select the Move button. Select the resources to move and the destination resource group. Acknowledge that you need to update scripts.s
 
+![move-resource-groups-aae58bce](https://user-images.githubusercontent.com/87706066/164204012-9aec1121-5ce3-4fdf-8f20-5ef9f9404637.png)
 
