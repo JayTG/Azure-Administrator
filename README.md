@@ -46,6 +46,9 @@
   - [Lock types](#lock-types)
   - [Reorganize Azure resources](#reorganize-azure-resources)
     - [Implementation](#implementation)
+  - [Remove resources and resource groups](#remove-resources-and-resource-groups)
+  - [Using PowerShell to delete resource groups](#using-powershell-to-delete-resource-groups)
+  - [Removing resources](#removing-resources)
   
 # Part 1: Prerequisites for Azure administrators
 
@@ -461,6 +464,19 @@ Sometimes you may need to move resources to either a new subscription or a new r
 When moving resources, both the source group and the target group are locked during the operation. Write and delete operations are blocked on the resource groups until the move completes. This lock means you can't add, update, or delete resources in the resource groups. Locks don't mean the resources aren't available. For example, if you move a virtual machine to a new resource group, an application can still access the virtual machine.
 
 ### Implementation
-To move resources, select the resource group containing those resources, and then select the Move button. Select the resources to move and the destination resource group. Acknowledge that you need to update scripts.s
+To move resources, select the resource group containing those resources, and then select the Move button. Select the resources to move and the destination resource group. Acknowledge that you need to update scripts.
+
+## Remove resources and resource groups
+Use caution when deleting a resource group. Deleting a resource group deletes all the resources contained within it. That resource group might contain resources that resources in other resource groups depend on.
+
+## Using PowerShell to delete resource groups
+To remove a resource group use, Remove-AzResourceGroup. In this example, we are removing the ContosoRG01 resource group from the subscription. The cmdlet prompts you for confirmation and returns no output.
+
+```
+Remove-AzResourceGroup -Name "ContosoRG01"
+```
+
+## Removing resources
+You can also delete individual resources within a resource group. For example, here we are deleting a virtual network. Notice you can change the resource group on this page.
 
 
