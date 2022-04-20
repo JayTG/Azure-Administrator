@@ -486,7 +486,7 @@ You can also delete individual resources within a resource group. For example, h
 
 Azure lets you view resource usage against limits. This is helpful to track current usage, and plan for future use.
 
-
+![check-resource-limits-4f522428](https://user-images.githubusercontent.com/87706066/164205398-152eb213-c39b-4f2c-a42c-8d3d281f779f.png)
 
 The limits shown are the limits for your subscription.
 When you need to increase a default limit, there is a Request Increase link.
