@@ -3,6 +3,7 @@
   - [Azure Cloud Shell features](#azure-cloud-shell-features)
   - [Use Azure PowerShell](#use-azure-powershell)
   - [What is the Az module?](#what-is-the-az-module)
+  - [Use Azure CLI](#use-azure-cli)
   
 # Part1: Prerequisites for Azure administrators
 
@@ -46,3 +47,24 @@ Az is the formal name for the Azure PowerShell module containing cmdlets to work
 - Azure AD
 - Containers
 - Machine learning
+
+## Use Azure CLI
+Azure CLI is a command-line program to connect to Azure and execute administrative commands on Azure resources. It runs on Linux, macOS, and Windows, and allows administrators and developers to execute their commands through a terminal, command-line prompt, or script instead of a web browser. For example, to restart a VM, you would use a command such as the following:
+
+```azurecli
+az vm restart -g MyResourceGroup -n MyVm
+```
+
+Azure CLI lets you control nearly every aspect of every Azure resource. You can work with resource groups, storage, VMs, Azure Active Directory (Azure AD), containers, machine learning, and so on.
+
+Commands in the CLI are structured in groups and subgroups. Each group represents a service provided by Azure, and the subgroups divide commands for these services into logical groupings. For example, the `storage` group contains subgroups including account, blob, share, and queue.
+
+So, how do you find the particular commands you need? One way is to use `az find`. For example, if you want to find commands that might help you manage a storage blob, you can use the following find command:
+```azurecli
+az find blob
+```
+If you already know the name of the command you want, the `--help` argument for that command will get you more detailed information on the command, and for a command group, a list of the available subcommands. For example, here's how you can get a list of the subgroups and commands for managing blob storage:
+```azurecli
+az storage blob --help
+```
+---
