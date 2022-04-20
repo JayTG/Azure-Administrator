@@ -34,6 +34,9 @@
   - [Back up your virtual machines](#back-up-your-virtual-machines)
   - [Advantages of using Azure Backup](#advantages-of-using-azure-backup)
   - [Use Azure Backup](#use-azure-backup)
+  - [Consistent management layer](#consistent-management-layer)
+  - [Benefits](#benefits)
+  - [Guidance](#guidance)
   
 # Part 1: Prerequisites for Azure administrators
 
@@ -359,3 +362,33 @@ Azure Backup uses several components that you download and deploy to each comput
 - Azure Backup VM extension
 
 Azure Backup uses a Recovery Services vault for storing the backup data. A vault is backed by Azure Storage blobs, making it a very efficient and economical long-term storage medium. With the vault in place, you can select the machines to back up, and define a backup policy (when snapshots are taken and for how long they’re stored).
+
+---
+
+## Consistent management layer 
+Azure Resource Manager provides a consistent management layer to perform tasks through Azure PowerShell, Azure CLI, Azure portal, REST API, and client SDKs. Choose the tools and APIs that work best for you.
+
+The following image shows how all the tools interact with the same Azure Resource Manager API. The API passes requests to the Azure Resource Manager service, which authenticates and authorizes the requests. Azure Resource Manager then routes the requests to the appropriate resource providers.
+
+## Benefits
+
+Azure Resource Manager provides several benefits:
+
+- You can deploy, manage, and monitor all the resources for your solution as a group, rather than handling these resources individually.
+- You can repeatedly deploy your solution throughout the development lifecycle and have confidence your resources are deployed in a consistent state.
+- You can manage your infrastructure through declarative templates rather than scripts.
+- You can define the dependencies between resources so they're deployed in the correct order.
+- You can apply access control to all services in your resource group because Role-Based Access Control (RBAC) is natively integrated into the management platform.
+- You can apply tags to resources to logically organize all the resources in your subscription.
+- You can clarify your organization's billing by viewing costs for a group of resources sharing the same tag.
+
+## Guidance
+
+The following suggestions help you take full advantage of Azure Resource Manager when working with your solutions.
+
+
+- Define and deploy your infrastructure through the declarative syntax in Azure Resource Manager templates, rather than through imperative commands.
+- Define all deployment and configuration steps in the template. You should have no manual steps for setting up your solution.
+- Run imperative commands to manage your resources, such as to start or stop an app or machine.
+- Arrange resources with the same lifecycle in a resource group. Use tags for all other organizing of resources.
+
