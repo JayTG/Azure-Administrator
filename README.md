@@ -479,4 +479,5 @@ Remove-AzResourceGroup -Name "ContosoRG01"
 ## Removing resources
 You can also delete individual resources within a resource group. For example, here we are deleting a virtual network. Notice you can change the resource group on this page.
 
+![move-resource-groups-aae58bce](https://user-images.githubusercontent.com/87706066/164204012-9aec1121-5ce3-4fdf-8f20-5ef9f9404637.png)
 
