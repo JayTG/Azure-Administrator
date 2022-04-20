@@ -370,6 +370,9 @@ Azure Resource Manager provides a consistent management layer to perform tasks t
 
 The following image shows how all the tools interact with the same Azure Resource Manager API. The API passes requests to the Azure Resource Manager service, which authenticates and authorizes the requests. Azure Resource Manager then routes the requests to the appropriate resource providers.
 
+![resource-manager-016a1bac](https://user-images.githubusercontent.com/87706066/164200629-bdfe1da2-d502-4132-bcde-3a4d15f65e04.png)
+
+
 ## Benefits
 
 Azure Resource Manager provides several benefits:
