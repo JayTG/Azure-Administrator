@@ -37,6 +37,15 @@
   - [Consistent management layer](#consistent-management-layer)
   - [Benefits](#benefits)
   - [Guidance](#guidance)
+  - [Review Azure resource terminology](#review-azure-resource-terminology)
+  - [Resource providers](#resource-providers)
+  - [Create resource groups](#create-resource-groups)
+    - [Considerations](#considerations)
+  - [Creating resource groups](#creating-resource-groups)
+  - [Create Azure Resource Manager locks](#create-azure-resource-manager-locks)
+  - [Lock types](#lock-types)
+  - [Reorganize Azure resources](#reorganize-azure-resources)
+    - [Implementation](#implementation)
   
 # Part 1: Prerequisites for Azure administrators
 
@@ -394,4 +403,64 @@ The following suggestions help you take full advantage of Azure Resource Manager
 - Define all deployment and configuration steps in the template. You should have no manual steps for setting up your solution.
 - Run imperative commands to manage your resources, such as to start or stop an app or machine.
 - Arrange resources with the same lifecycle in a resource group. Use tags for all other organizing of resources.
+
+## Review Azure resource terminology
+
+
+- **resource** - A manageable item that is available through Azure. Some common resources are a virtual machine, storage account, web app, database, and virtual network, but there are many more.
+- **resource group** - A container that holds related resources for an Azure solution. The resource group can include all the resources for the solution, or only those resources that you want to manage as a group. You decide how you want to allocate resources to resource groups based on what makes the most sense for your organization.
+- **resource provider** - A service that supplies the resources you can deploy and manage through Resource Manager. Each resource provider offers operations for working with the resources that are deployed. Some common resource providers are Microsoft.Compute, which supplies the virtual machine resource, Microsoft.Storage, which supplies the storage account resource, and Microsoft.Web, which supplies resources related to web apps.
+- **template** - A JavaScript Object Notation (JSON) file that defines one or more resources to deploy to a resource group. It also defines the dependencies between the deployed resources. The template can be used to deploy the resources consistently and repeatedly.
+- **declarative syntax** - Syntax that lets you state "Here is what I intend to create" without having to write the sequence of programming commands to create it. The Resource Manager template is an example of declarative syntax. In the file, you define the properties for the infrastructure to deploy to Azure.
+
+## Resource providers
+Each resource provider offers a set of resources and operations for working with an Azure service. For example, if you want to store keys and secrets, you work with the Microsoft.KeyVault resource provider. This resource provider offers a resource type called vaults for creating the key vault.
+
+The name of a resource type is in the format: {resource-provider}/{resource-type}. For example, the key vault type is Microsoft.KeyVault/vaults.
+
+## Create resource groups
+Resources can be deployed to any new or existing resource group. Deployment of resources to a resource group becomes a job where you can track the template execution. If deployment fails, the output of the job can describe why the deployment failed. Whether the deployment is a single resource to a group or a template to a group, you can use the information to fix any errors and redeploy. Deployments are incremental; if a resource group contains two web apps and you decide to deploy a third, the existing web apps will not be removed.
+
+### Considerations
+
+Resource Groups are at their simplest a logical collection of resources. There are a couple of small rules for resource groups.
+
+- Resources can only exist in one resource group.
+- Resource Groups cannot be renamed.
+- Resource Groups can have resources of many different types (services).
+- Resource Groups can have resources from many different regions.
+
+## Creating resource groups
+There are some important factors to consider when defining your resource group:
+
+- All the resources in your group should share the same lifecycle. You deploy, update, and delete them together. If one resource, such as a database server, needs to exist on a different deployment cycle it should be in another resource group.
+- Each resource can only exist in one resource group.
+- You can add or remove a resource to a resource group at any time.
+- You can move a resource from one resource group to another group.
+- A resource group can contain resources that reside in different regions.
+- A resource group can be used to scope access control for administrative actions.
+- A resource can interact with resources in other resource groups. This interaction is common when the two resources are related but don't share the same lifecycle (for example, web apps connecting to a database).
+
+When creating a resource group, you need to provide a location for that resource group. You may be wondering, "Why does a resource group need a location? And, if the resources can have different locations than the resource group, why does the resource group location matter at all?" The resource group stores metadata about the resources. Therefore, when you specify a location for the resource group, you're specifying where that metadata is stored. For compliance reasons, you may need to ensure that your data is stored in a particular region.
+
+## Create Azure Resource Manager locks
+
+A common concern with resources provisioned in Azure is the ease with which they can be deleted. An over-zealous or careless administrator can accidentally erase months of work with a few steps. Resource Manager locks allow organizations to put a structure in place that prevents the accidental deletion of resources in Azure.
+
+- You can associate the lock with a subscription, resource group, or resource.
+- Locks are inherited by child resources.
+
+## Lock types
+
+- **Read-Only locks**, which prevent any changes to the resource.
+- **Delete locks**, which prevent deletion.
+
+## Reorganize Azure resources
+Sometimes you may need to move resources to either a new subscription or a new resource group in the same subscription.
+
+When moving resources, both the source group and the target group are locked during the operation. Write and delete operations are blocked on the resource groups until the move completes. This lock means you can't add, update, or delete resources in the resource groups. Locks don't mean the resources aren't available. For example, if you move a virtual machine to a new resource group, an application can still access the virtual machine.
+
+### Implementation
+To move resources, select the resource group containing those resources, and then select the Move button. Select the resources to move and the destination resource group. Acknowledge that you need to update scripts.s
+
 
