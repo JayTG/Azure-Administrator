@@ -49,6 +49,7 @@
   - [Remove resources and resource groups](#remove-resources-and-resource-groups)
   - [Using PowerShell to delete resource groups](#using-powershell-to-delete-resource-groups)
   - [Removing resources](#removing-resources)
+  - [Determine resource limits](#determine-resource-limits)
   
 # Part 1: Prerequisites for Azure administrators
 
@@ -481,3 +482,13 @@ You can also delete individual resources within a resource group. For example, h
 
 ![move-resource-groups-aae58bce](https://user-images.githubusercontent.com/87706066/164204012-9aec1121-5ce3-4fdf-8f20-5ef9f9404637.png)
 
+## Determine resource limits
+
+Azure lets you view resource usage against limits. This is helpful to track current usage, and plan for future use.
+
+
+
+The limits shown are the limits for your subscription.
+When you need to increase a default limit, there is a Request Increase link.
+All resources have a maximum limit listed in Azure limits.
+If you are at the maximum limit, the limit can't be increased.
